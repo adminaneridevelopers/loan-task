@@ -1,0 +1,1 @@
+{"version":3,"file":"loan-applications.provider.js","sourceRoot":"","sources":["../../../src/models/loanapplication/loan-applications.provider.ts"],"names":[],"mappings":";;;AAAA,sEAAgF;AAChF,uEAA4D;AAE/C,QAAA,wBAAwB,GAAG;IACtC;QACE,OAAO,EAAE,0CAA2B;QACpC,QAAQ,EAAE,yCAAe;KAC1B;CACF,CAAC"}
