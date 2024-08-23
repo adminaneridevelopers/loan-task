@@ -3,21 +3,21 @@ import { useToast as usePrimeToast } from 'primevue/usetoast';
 export function useToast() {
   const toast = usePrimeToast();
 
-  const success = (message?: string) => {
+  const success = (message?: string, life?: number) => {
     toast.add({
       severity: 'success',
       summary: 'Success',
       detail: message || 'Success',
-      life: 3000,
+      life:  life !== undefined ? life : 3000,
     });
   };
 
-  const error = (message?: string) => {
+  const error = (message?: string, life?: number) => {
     toast.add({
       severity: 'error',
       summary: 'Error',
       detail: message || 'Something went wrong',
-      life: 15000,
+      life:  life !== undefined ? life : 15000,
     });
   };
 

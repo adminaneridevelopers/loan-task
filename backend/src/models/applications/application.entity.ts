@@ -253,8 +253,12 @@ export class Application extends Model<Application> {
       attributes: [
         [this.sequelize.fn('AVG', this.sequelize.col('loan_amount')), 'averageLoanAmount']
       ],
+      where: {
+        status: 'submitted',
+      },
     });
 
+    console.log('result ===> ', result)
     const res = result?.get('averageLoanAmount') || 0;
     return res as number;
   }

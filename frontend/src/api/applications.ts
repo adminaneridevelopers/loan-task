@@ -23,5 +23,11 @@ export default {
       payload
     );
     return data;
+  },
+  getAverageLoanAmount: async (): Promise<{ success: boolean; averageLoanAmount: number }> => {
+    const data = await get<undefined, { success: boolean; averageLoanAmount: number }>(
+      <HttpGetRoute>'/brokers/applications/avrage-loan-amount'
+    );
+    return data;
   }
 };

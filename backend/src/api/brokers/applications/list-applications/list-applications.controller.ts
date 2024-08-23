@@ -116,6 +116,34 @@ export class BrokerApplicationsListController {
     };
   }
 
+  @Get('avrage-loan-amount')
+  @UseGuards(BrokerGuard)
+  @ApiBearerAuth('BROKER')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Get average loan amount',
+    description: 'Fetches the average loan amount for all applications.',
+  })
+  @ApiOkResponse({
+    type: Number,
+  })
+  @ApiInternalServerErrorResponse({
+    type: InternalServerErrorResponseDto,
+    description: `Returns \`${INTERNAL_SERVER_ERROR}\` when the result could not be computed`,
+  })
+  async getAverageLoanAmount(): Promise<{ success: boolean; averageLoanAmount: number }> {
+    try {
+      const averageLoanAmount = await this.applicationEntity.getAverageLoanAmount();
+
+      return {
+        success: true,
+        averageLoanAmount,
+      };
+    } catch (error) {
+      throw new HttpException(INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Post('create-applications')
   @UseGuards(BrokerGuard)
   @ApiBearerAuth('BROKER')

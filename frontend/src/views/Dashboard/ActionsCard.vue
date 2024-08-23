@@ -2,11 +2,22 @@
 import { api } from '@/api';
 import { useModal } from '@/composables/useModal';
 import { useToast } from '@/composables/useToast';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 const modal = useModal<boolean>()
 const toast = useToast()
+const message = ref('');
+const averageLoanAmount = ref(0); 
 
-// Define the emit function
+function debounce(func: Function, wait: number) {
+  let timeout: number | undefined;
+  return function (...args: any[]) {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = window.setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
 const emit = defineEmits(['form-submitted']);
 
 const formData = ref({
@@ -28,13 +39,37 @@ const formData = ref({
   savingsContribution: 0,
 });
 
+const fetchAverageLoanAmount = debounce(async () => {
+  try {
+    const response = await api.applications.getAverageLoanAmount();
+    averageLoanAmount.value = parseFloat(response.averageLoanAmount);
+    const loanAmount = formData.value.loanAmount;
+    message.value = loanAmount > averageLoanAmount.value
+      ? 'Requested Loan Amount is Greater Than Average Loan Amount.'
+      : 'Requested Loan Amount is Less Than Average Loan Amount.';
+  } catch (error) {
+    console.error('Error fetching average loan amount:', error);
+  }
+}, 100);
+
+watch(() => formData.value.loanAmount, (newValue) => {
+  fetchAverageLoanAmount();
+});
+
 const submitApplication = async () => {
   const response = await api.applications.post(formData.value)
+  const loanAmount = formData.value.loanAmount;
+  const avgLoanAmount = averageLoanAmount.value;
+
   if (response.success) {
-    toast.success('Application Saved Successfully.')
-    emit('form-submitted');
+    toast.success(`Application Saved Successfully.
+      Average Loan Amount: ${avgLoanAmount.toLocaleString()}
+      Requested Loan Amount: ${loanAmount.toLocaleString()}`,0
+      );
+      emit('form-submitted');
+      message.value = ''
   } else {
-    toast.error('Error occurred while saving application')
+    toast.error('Error occurred while saving application', 0)
     formData.value.applicantName = '';
     formData.value.applicantEmail = '';
     formData.value.applicantMobilePhoneNumber = '';
@@ -94,7 +129,9 @@ const submitApplication = async () => {
         <BNumberInput v-model="formData.incomingPrice" id="incoming_price" required />
         <label for="incoming_stamp_duty">Incoming Stamp Duty</label>
         <BNumberInput v-model="formData.incomingStampDuty" id="incoming_stamp_duty" required />
-        <label for="loan_amount">Loan Amount</label>
+        <label for="loan_amount">Loan Amount
+          <span class="warning-text">{{ message }}</span>
+        </label>
         <BNumberInput v-model="formData.loanAmount" id="loan_amount" required />
         <label for="loan_duration">Loan Duration</label>
         <BNumberInput v-model="formData.loanDuration" id="loan_duration" required />
@@ -143,5 +180,11 @@ const submitApplication = async () => {
 .b-icon {
   width: 5rem;
   height: 5rem;
+}
+
+.warning-text {
+  display: contents;
+  color: #ff0800; 
+  font-size: 0.7rem;
 }
 </style>

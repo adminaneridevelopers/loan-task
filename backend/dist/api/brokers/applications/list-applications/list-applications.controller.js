@@ -75,6 +75,18 @@ let BrokerApplicationsListController = class BrokerApplicationsListController {
             applications,
         };
     }
+    async getAverageLoanAmount() {
+        try {
+            const averageLoanAmount = await this.applicationEntity.getAverageLoanAmount();
+            return {
+                success: true,
+                averageLoanAmount,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(response_messages_1.INTERNAL_SERVER_ERROR, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async post(user, body, request) {
         const avgLoanAmount = await this.applicationEntity.getAverageLoanAmount();
         const loanAmount = body.loanAmount !== avgLoanAmount ? body.loanAmount : null;
@@ -114,6 +126,27 @@ __decorate([
         list_applications_dto_1.BrokerApplicationsListRequestDto]),
     __metadata("design:returntype", Promise)
 ], BrokerApplicationsListController.prototype, "find", null);
+__decorate([
+    (0, common_1.Get)('avrage-loan-amount'),
+    (0, common_1.UseGuards)(broker_guard_1.BrokerGuard),
+    (0, swagger_1.ApiBearerAuth)('BROKER'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get average loan amount',
+        description: 'Fetches the average loan amount for all applications.',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+        type: Number,
+    }),
+    (0, swagger_1.ApiInternalServerErrorResponse)({
+        type: responses_1.InternalServerErrorResponseDto,
+        description: `Returns \`${response_messages_1.INTERNAL_SERVER_ERROR}\` when the result could not be computed`,
+    }),
+    openapi.ApiResponse({ status: common_1.HttpStatus.OK }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BrokerApplicationsListController.prototype, "getAverageLoanAmount", null);
 __decorate([
     (0, common_1.Post)('create-applications'),
     (0, common_1.UseGuards)(broker_guard_1.BrokerGuard),

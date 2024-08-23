@@ -5,5 +5,9 @@ export declare class BrokerApplicationsListController {
     private applicationEntity;
     constructor(applicationEntity: typeof Application);
     find(user: BrokerDto, query: BrokerApplicationsListRequestDto): Promise<BrokerApplicationsListResponseDto>;
+    getAverageLoanAmount(): Promise<{
+        success: boolean;
+        averageLoanAmount: number;
+    }>;
     post(user: BrokerDto, body: ApplicationDto, request: Request): Promise<BrokerApplicationPostResponseDto>;
 }

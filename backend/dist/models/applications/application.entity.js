@@ -25,7 +25,11 @@ let Application = Application_1 = class Application extends sequelize_typescript
             attributes: [
                 [this.sequelize.fn('AVG', this.sequelize.col('loan_amount')), 'averageLoanAmount']
             ],
+            where: {
+                status: 'submitted',
+            },
         });
+        console.log('result ===> ', result);
         const res = (result === null || result === void 0 ? void 0 : result.get('averageLoanAmount')) || 0;
         return res;
     }
